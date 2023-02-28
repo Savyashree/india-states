@@ -8,7 +8,7 @@
     <style>
       /* Define the style for the districts */
       .district {
-        fill: #ccc;
+        fill: #536fb352;
         stroke: #333;
         stroke-width: 0.5px;
       }
@@ -34,7 +34,6 @@
       d3.json(
         'https://raw.githubusercontent.com/deldersveld/topojson/master/countries/india/india-districts.json'
       ).then(function (data) {
-        
         // Extract the districts data from the TopoJSON data
         var districts = topojson.feature(data, data.objects.IND_adm2);
 
@@ -60,9 +59,15 @@
           .attr('id', function (d, i) {
             return 'district' + i;
           })
+          .attr('name1', function (d, i) {
+            return 'district helo';
+          })
           .on('click', function (d, i) {
             d3.selectAll('.highlighted').classed('highlighted', false);
-            d3.select(this).classed('highlighted', true);
+            d3.select(this).classed('highlighted', (d, i) => {
+              console.log(d.properties.NAME_1, d.properties.NAME_2);
+              return true;
+            });
           });
       });
     </script>
