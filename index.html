@@ -62,13 +62,61 @@
           .attr('name1', function (d, i) {
             return 'district helo';
           })
-          .on('click', function (d, i) {
+          .on('mouseover', function (d, i) {
             d3.selectAll('.highlighted').classed('highlighted', false);
             d3.select(this).classed('highlighted', (d, i) => {
               console.log(d.properties.NAME_1, d.properties.NAME_2);
               return true;
             });
           });
+
+        // Read the data from the Excel file
+        const workbook = XLSX.readFile('data.xlsx');
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        // Convert the Excel data to JSON
+        const data = XLSX.utils.sheet_to_json(worksheet);
+
+        // Calculate the average value for each state
+        const stateAverages = d3.rollup(
+          data,
+          (v) => d3.mean(v, (d) => d.value),
+          (d) => d.state
+        );
+
+        // Update the map with the average values
+        districtPaths.attr('fill', (d) => {
+          // Get the average value for the state that the district belongs to
+          const state = d.properties.state;
+          const average = stateAverages.get(state);
+          // Use a color scale to map the average value to a color
+          return colorScale(average);
+        });
+
+        // Read the data from the Excel file
+        const workbook = XLSX.readFile('data.xlsx');
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        // Convert the Excel data to JSON
+        const data = XLSX.utils.sheet_to_json(worksheet);
+
+        // Calculate the average value for each state
+        const stateAverages = d3.rollup(
+          data,
+          (v) => d3.mean(v, (d) => d.value),
+          (d) => d.state
+        );
+
+        // Update the map with the average values
+        districtPaths.attr('fill', (d) => {
+          // Get the average value for the state that the district belongs to
+          const state = d.properties.state;
+          const average = stateAverages.get(state);
+          // Use a color scale to map the average value to a color
+          return colorScale(average);
+        });
       });
     </script>
   </body>
