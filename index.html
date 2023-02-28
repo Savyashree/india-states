@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>India Map</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+    <style>
+      /* Define the style for the districts */
+      .district {
+        fill: #ccc;
+        stroke: #333;
+        stroke-width: 0.5px;
+      }
+      /* Define the style for the highlighted district */
+      .highlighted {
+        fill: orange;
+        stroke: #333;
+        stroke-width: 2px;
+      }
+      .state {
+        fill: #f2f2f2;
+        stroke: #333;
+        stroke-width: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Create a container for the map -->
+    <svg id="map" width="800" height="600"></svg>
+
+    <script>
+      // Load the India map data using TopoJSON
+      d3.json(
+        'https://raw.githubusercontent.com/deldersveld/topojson/master/countries/india/india-districts.json'
+      ).then(function (data) {
+        
+        // Extract the districts data from the TopoJSON data
+        var districts = topojson.feature(data, data.objects.IND_adm2);
+
+        // Define the projection for the India map
+        var projection = d3
+          .geoMercator()
+          .center([82.0, 23.0])
+          .scale(800)
+          .translate([400, 300]);
+
+        // Define the path generator for the India map
+        var path = d3.geoPath().projection(projection);
+
+        // Create the India map using the geojson data
+        var map = d3
+          .select('#map')
+          .selectAll('path')
+          .data(districts.features)
+          .enter()
+          .append('path')
+          .attr('d', path)
+          .attr('class', 'district')
+          .attr('id', function (d, i) {
+            return 'district' + i;
+          })
+          .on('click', function (d, i) {
+            d3.selectAll('.highlighted').classed('highlighted', false);
+            d3.select(this).classed('highlighted', true);
+          });
+      });
+    </script>
+  </body>
+</html>
